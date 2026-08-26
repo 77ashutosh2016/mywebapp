@@ -35,6 +35,17 @@ public class GlobalExceptioHandler {
     }
 
 
+    public ResponseEntity<ApiResponse<Void>> DBException(DBException ex)
+    {
+
+        log.error("Error in DB "+ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error(ex.getMessage()));
+
+
+    }
+
+
 
 
 

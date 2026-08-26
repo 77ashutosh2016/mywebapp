@@ -2,18 +2,27 @@ package com.myEkart.web.app.serviceImpl;
 
 
 import com.myEkart.web.app.dto.ProductDTO;
+import com.myEkart.web.app.exception.DBException;
 import com.myEkart.web.app.exception.DuplicateResourceException;
 import com.myEkart.web.app.exception.ProductNotFoundException;
 import com.myEkart.web.app.model.Products;
 import com.myEkart.web.app.repository.ProductRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
+
+@Slf4j
 @Service
 public class ProductServiceImpl {
+
+    //private static final Logger log= LoggerFactory.getLogger(ProductServiceImpl.class);
 
 
 
@@ -60,6 +69,9 @@ public class ProductServiceImpl {
 
     }
 
+
+    // To getProductById
+
     public ProductDTO getProductById(Long productId)
     {
 
@@ -79,22 +91,31 @@ public class ProductServiceImpl {
 
 
 
-    /*public List<ProductDTO> getAllProducts()
+    public List<ProductDTO> getAllProducts()
     {
         List<ProductDTO> productDTOList= new ArrayList<>();
-        List<Products> productList= productRepository.findAllProduct();
+        List<Products> productList= productRepository.findAll();
 
-        for(Products products:productList)
+        if(!productList.isEmpty())
         {
-            productDTOList.add(mapToDTO(products));
+            for (Products products : productList) {
+                productDTOList.add(mapToDTO(products));
+
+            }
+
+            return productDTOList;
+        }
+        else{
+
+            log.error("No Product Found");
+            return  Collections.emptyList();
+
 
         }
 
-        return productDTOList;
-
 
     }
-*/
+
 
 
 
@@ -124,5 +145,58 @@ public class ProductServiceImpl {
 
 
     }
+
+    public Products maptoModel(ProductDTO productDTO)
+    {
+        Products products=new Products();
+
+        products.setProductId(productDTO.getProductId());
+        products.setProductName(productDTO.getProductName());
+        products.setProductBrand(productDTO.getProductBrand());
+        products.setProductCategory(productDTO.getProductCategory());
+        products.setProductDescription(productDTO.getProductDescription());
+        products.setProductStatus(productDTO.getProductStatus());
+        products.setProductPrice(productDTO.getProductPrice());
+        products.setProductDiscountPercentage(productDTO.getProductdiscountPercentage());
+        products.setProductStockQuantity(productDTO.getProductStockQuantity());
+
+        return products;
+
+
+    }
+
+
+    // Updating the Product
+
+    public ProductDTO updateProduct(ProductDTO productDTO) {
+        Products products = new Products();
+        ProductDTO productDTO1=new ProductDTO();
+        boolean present = productRepository.existsById(productDTO.getProductId());
+        log.info("Product is available for update ID "+ productDTO.getProductId());
+
+        if (present) {
+            products = maptoModel(productDTO);
+            Products product1=new Products();
+            try {
+                 product1 = productRepository.save(products);
+            }catch (DBException ex)
+            {
+                log.error("Error Encounter in DB ");
+            }
+            productDTO1=mapToDTO(product1);
+
+
+
+        } else {
+            log.error("Product Not Found ID " + productDTO.getProductId());
+            return productDTO;
+
+        }
+
+        return productDTO1;
+
+
+    }
+
 
 }
