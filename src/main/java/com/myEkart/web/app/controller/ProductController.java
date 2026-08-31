@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 @Slf4j
 @RestController
@@ -107,6 +108,23 @@ public class ProductController {
         }
         return result;
 
+
+    }
+
+
+    @GetMapping("/getProductByPriceRange")
+    public ResponseEntity<?> getProductByPriceRange(@RequestParam BigDecimal startPrice, @RequestParam BigDecimal endPrice)
+    {
+          List<?> productDTO=productService.getProductByPriceRange(startPrice,endPrice);
+
+          if(productDTO.isEmpty())
+          {
+              return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Products in given Range");
+          }
+          else
+          {
+              return ResponseEntity.ok(productDTO);
+          }
 
     }
 

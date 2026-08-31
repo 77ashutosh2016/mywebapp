@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -197,6 +198,38 @@ public class ProductServiceImpl {
 
 
     }
+
+
+
+
+    // Get product by Price Range
+
+
+        public List<?> getProductByPriceRange(BigDecimal startPrice, BigDecimal endPrice)
+        {
+
+            List<ProductDTO> productDTOList=new ArrayList<>();
+            List<Products> products= productRepository.ProductsBetween(startPrice,endPrice);
+
+
+            if(products.isEmpty())
+            {
+                throw new ProductNotFoundException(" No Product Found in this Range");
+
+            }
+            else {
+
+                for (Products products1 : products) {
+                    ProductDTO productDTO = mapToDTO(products1);
+                    productDTOList.add(productDTO);
+
+                }
+            }
+
+            return Collections.emptyList();
+
+
+        }
 
 
 }
